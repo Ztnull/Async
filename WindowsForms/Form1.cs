@@ -9,6 +9,13 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 
+/// <summary>
+/// 【多线程】
+///  1、异步，多线程
+///  2、异步和多线程的区别：其实在C#中异步和多线程并没有什么区别。只不过，
+///  3、异步：使用的事线程池的线程ThreadProlong
+/// 总结：我们可以理解为异步和多线程一样
+/// </summary>
 namespace WindowsForms
 {
     public partial class Form1 : Form
@@ -37,7 +44,7 @@ namespace WindowsForms
             Console.WriteLine($"****************button1_Click   End {Thread.CurrentThread.ManagedThreadId}***************");
         }
         /// <summary>
-        /// 异步
+        /// 异步【来自于委托】
         /// </summary>
         /// <param name="sender"></param>
         /// <param name="e"></param>
@@ -46,7 +53,19 @@ namespace WindowsForms
             //Thread
             Console.WriteLine($"****************button2_Click Start {Thread.CurrentThread.ManagedThreadId}***************");
 
-      
+            Action<string> act = (t) =>
+            {//虽然不能使用多播，但是可以这样用
+                this.DoSomethingLong("button2_Click DoSomethingLong1");
+                this.DoSomethingLong("button2_Click DoSomethingLong2");
+            };
+
+
+            act.Invoke("");
+
+            act.BeginInvoke("button2_Click", c =>
+            {// 回调函数
+                Console.WriteLine($"***************************{c.AsyncState} {Thread.CurrentThread.ManagedThreadId}****************************");
+            }, "回调");
 
             Console.WriteLine($"****************button2_Click   End {Thread.CurrentThread.ManagedThreadId}***************");
         }
