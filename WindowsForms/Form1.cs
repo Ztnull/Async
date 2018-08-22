@@ -35,6 +35,7 @@ namespace WindowsForms
             //Thread
             Console.WriteLine($"****************button1_Click Start {Thread.CurrentThread.ManagedThreadId}***************");
 
+
             for (int i = 0; i < 5; i++)
             {
                 string name = string.Format($"button1_Click{i}");
@@ -51,7 +52,7 @@ namespace WindowsForms
         private void button2_Click(object sender, EventArgs e)
         {
             //Thread
-            Console.WriteLine($"****************button2_Click Start {Thread.CurrentThread.ManagedThreadId}***************");
+            Console.WriteLine($"****************button2_Click Start {Thread.CurrentThread.ManagedThreadId}**********     *****");
 
             Action<string> act = (t) =>
             {//虽然不能使用多播，但是可以这样用
@@ -62,10 +63,15 @@ namespace WindowsForms
 
             act.Invoke("");
 
-            act.BeginInvoke("button2_Click", c =>
-            {// 回调函数
-                Console.WriteLine($"***************************{c.AsyncState} {Thread.CurrentThread.ManagedThreadId}****************************");
-            }, "回调");
+            var asyncResult = act.BeginInvoke("button2_Click", c =>
+              {// 回调函数
+                  Console.WriteLine($"***************************{c.AsyncState} {Thread.CurrentThread.ManagedThreadId}****************************");
+              }, "回调");
+
+            //asyncResult.AsyncWaitHandle.WaitOne();//等待线程的执行完成，不会进行其他操作
+            //asyncResult.AsyncWaitHandle.WaitOne(2000);//在此等待2000ms如果线程没执行完成，将继续执行以下代码
+
+            act.EndInvoke(asyncResult);//等待线程执行的返回值，
 
             Console.WriteLine($"****************button2_Click   End {Thread.CurrentThread.ManagedThreadId}***************");
         }
